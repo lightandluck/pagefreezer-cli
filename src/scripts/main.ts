@@ -38,7 +38,7 @@ function setPagination() {
 
 function start() {
     $.getJSON('./config.json', function (data) {
-        var API_KEY = data.api_key;
+        var API_KEY = data.API_KEY;
         // 2. Initialize the JavaScript client library.
         // !! Work around because gapi.client.init is not in types file 
         (gapi as any).client.init({ 'apiKey': API_KEY });
@@ -76,7 +76,7 @@ function showPage(row_index: number) {
 
             console.log(row_data);
             showDiffMetadata(row_data);
-            runDiff(old_url, new_url);
+            // runDiff(old_url, new_url);
             
         } else {
             $('#diff_title').text('No data found')
