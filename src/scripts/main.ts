@@ -41,7 +41,7 @@ function start() {
         var API_KEY = data.API_KEY;
         // 2. Initialize the JavaScript client library.
         // !! Work around because gapi.client.init is not in types file 
-        (gapi as any).client.init({ 'apiKey': API_KEY });
+        gapi.client.init({ 'apiKey': API_KEY });
 
         $('#diff_by_index').click(function () {
             var urlParams = new URLSearchParams(window.location.search);

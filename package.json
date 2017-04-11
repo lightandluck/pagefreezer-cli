@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/core-js": "^0.9.35",
-    "@types/gapi": "0.0.30",
+    "@types/gapi": "0.0.31",
     "@types/jquery": "^2.0.40",
     "browserify": "^14.0.0",
     "gulp": "^3.9.1",
