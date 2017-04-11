@@ -98,3 +98,4 @@ archives/.idea/
 config.json
 .vscode/
 .DS_Store
+dist/bundle.js
