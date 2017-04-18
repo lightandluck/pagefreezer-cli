@@ -10,16 +10,10 @@
 
 import {Pagefreezer} from "./Pagefreezer";
 
+
 $( document ).ready(function() {
     console.log("ready");
     toggleProgressbar(false);
-
-    $('#submitButton').click(function () {
-        runDiff(
-            $('#url1').val(), 
-            $('#url2').val()
-        );
-    });
 
     $('#toggle_view').click(toggleView);
 
