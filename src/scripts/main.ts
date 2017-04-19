@@ -8,17 +8,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+//TODO: import gapi and test googleauth
+
 import {Pagefreezer} from "./Pagefreezer";
+import {GoogleAuth} from "./google-sheets";
 
-
-$( document ).ready(function() {
+$(document).ready(function() {
     console.log("ready");
     toggleProgressbar(false);
 
     $('#toggle_view').click(toggleView);
-
-    // Load Google api
-    gapi.load('client', start);
 
     setPagination()
 })
@@ -29,24 +28,6 @@ function setPagination() {
     $('#prev_index').text(`<-- Row ${index-1}`).attr('href', `/diffbyindex?index=${index-1}`);
     $('#next_index').text(`Row ${index+1} -->`).attr('href', `/diffbyindex?index=${index+1}`);
 }
-
-function start() {
-    $.getJSON('./config.json', function (data) {
-        var API_KEY = data.API_KEY;
-        // 2. Initialize the JavaScript client library.
-        // !! Work around because gapi.client.init is not in types file 
-        gapi.client.init({ 'apiKey': API_KEY });
-
-        $('#diff_by_index').click(function () {
-            var urlParams = new URLSearchParams(window.location.search);
-            var index = parseInt(urlParams.get('index'));
-            showPage(index);
-        })
-    })
-    .fail(function() {
-        console.error('Couldn\'t find api key');
-    });
-};
 
 function showPage(row_index: number) {
     // link to test spreadsheet: https://docs.google.com/spreadsheets/d/17QA_C2-XhLefxZlRKw74KDY3VNstbPvK3IHWluDJMGQ/edit#gid=0
