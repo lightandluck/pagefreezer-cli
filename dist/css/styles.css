@@ -2,6 +2,15 @@ body.fixed-to-top-offset {
     padding-top: 30rem; 
 }
 
+.navbar .brand {
+    display: block;
+    float: left;
+    padding: 10px 20px 10px;
+    font-size: 3rem;
+    font-weight: 200;
+    text-decoration: none;
+}
+
 .info-text {
     display: none;
 }
@@ -14,14 +23,24 @@ body.fixed-to-top-offset {
     color: white;
     margin-bottom: 10px;
 }
+
 #inspectorView input[type="checkbox"] {
     margin-right: 7px;
 }
+
 #inspectorView label {
     display: block;
     font-weight: 200;
     font-size: 1.4rem;
     cursor: pointer;
+}
+
+#tbl_list_view tbody tr {
+    cursor: pointer;
+}
+
+#tbl_list_view tbody tr:hover {
+    background-color: #EEE;
 }
 
 .short-view label {
@@ -43,6 +62,10 @@ iframe {
 
 .progress {
     width: 100%;
+}
+
+#container_page_view {
+    display: none;
 }
 
 .progress .progress-bar.active {
