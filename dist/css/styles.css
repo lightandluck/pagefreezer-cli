@@ -11,6 +11,25 @@ body.fixed-to-top-offset {
     text-decoration: none;
 }
 
+#bootstrap-override .navbar-brand {
+    font-size: 1.4em;
+    margin-right: 6px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-decoration: none;
+}
+
+#bootstrap-override .navbar-inverse, #bootstrap-override .navbar-inverse a, #bootstrap-override .navbar-brand:hover {
+    color: #EEE;
+}
+
+.navbar {
+    border-radius: 0;
+    min-height: 75px;
+    padding: 10px;
+}
+
 .info-text {
     display: none;
 }

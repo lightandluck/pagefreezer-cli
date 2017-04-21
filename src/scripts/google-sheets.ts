@@ -68,12 +68,9 @@ function setSigninStatus(isSignedIn: boolean) {
     var isAuthorized = user.hasGrantedScopes(SCOPE);
     if (isAuthorized) {
         $('#sign-in-or-out-button').html('Sign out');
-        $('#auth-status').html('You are currently signed in and have granted ' +
-            'access to this app.');
+        $('#auth-status').html('You are currently signed in.');
     } else {
-        $('#sign-in-or-out-button').html('Sign In/Authorize');
-        $('#auth-status').html('You have not authorized this app or you are ' +
-            'signed out.');
+        $('#sign-in-or-out-button').html('Sign In');
     }
 }
 
