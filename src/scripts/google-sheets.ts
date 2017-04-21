@@ -24,8 +24,8 @@ function initClient() {
     // This will populate methods on gapi object so that we can use the api.
     let discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/sheets/v4/rest';
 
-    // Initialize the gapi.client object, which app uses to make API requests.
-    // Get API key and client ID from API Console.
+    // Initialize the gapi.client object, which the app uses to make API requests.
+    // Get API key and client ID from config.json.
     // 'scope' field specifies space-delimited list of access scopes.
     $.getJSON('./config.json', function (data) {
         let API_KEY = data.API_KEY,
@@ -43,7 +43,7 @@ function initClient() {
             GoogleAuth.isSignedIn.listen(updateSigninStatus);
 
             // Handle initial sign-in state. (Determine if user is already signed in.)
-            setSigninStatus(false);
+            updateSigninStatus(false);
         });
     })
     .fail(() => console.log('Could not load config.json'));
@@ -63,23 +63,17 @@ export function revokeAccess() {
     GoogleAuth.disconnect();
 }
 
-function setSigninStatus(isSignedIn: boolean) {
-    var user = GoogleAuth.currentUser.get();
-    var isAuthorized = user.hasGrantedScopes(SCOPE);
+function updateSigninStatus(isSignedIn: boolean) {
+    let user = GoogleAuth.currentUser.get();
+    let isAuthorized = user.hasGrantedScopes(SCOPE);
     if (isAuthorized) {
         $('#sign-in-or-out-button').html('Sign out');
-        $('#auth-status').html('You are currently signed in.');
+        let profile = user.getBasicProfile();
+        $('#auth-status').html(`Welcome, ${profile.getName()}`);
     } else {
         $('#sign-in-or-out-button').html('Sign In');
+        $('#auth-status').html('');
     }
-}
-
-// entry point for sign-in listener 
-// not currently using isSignedIn parameter for anything significant.
-// because of Google example. 
-// TODO: refactor?
-function updateSigninStatus(isSignedIn: boolean) {
-    setSigninStatus(isSignedIn);
 }
 
 
