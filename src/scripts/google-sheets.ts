@@ -20,8 +20,8 @@ $(document).ready(() => {
                     "Save": {
                         className: 'btn-success',
                         callback: function() {
-                        localStorage.setItem('dictionary_path', $('#dictionary_path').val());
                         localStorage.setItem('important_changes_path', $('#important_changes_path').val());
+                        localStorage.setItem('dictionary_path', $('#dictionary_path').val());
                         }
                     },
                     "Cancel": {
@@ -29,9 +29,13 @@ $(document).ready(() => {
                     }
                 }
             });
+            let changes_url = localStorage.getItem('important_changes_path');
+            let dictionary_url = localStorage.getItem('dictionary_path');
 
-            $('#dictionary_path').val(localStorage.getItem('dictionary_path'));
-            $('#important_changes_path').val(localStorage.getItem('important_changes_path'));
+            $('#important_changes_path').val(changes_url);
+            $('#changes_url').attr('href', changes_url);
+            $('#dictionary_path').val(dictionary_url);
+            $('#dictionary_url').attr('href', dictionary_url);
         });
     });
 });
