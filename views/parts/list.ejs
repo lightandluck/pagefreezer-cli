@@ -1,4 +1,4 @@
-<div id="container_list_view">
+<div id="container_list_view" class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <table id="tbl_list_view" class="table">
@@ -11,7 +11,6 @@
         // TODO: break into own module
         $(document).ready(function() {
             // setup handlers 
-
             $('#lnk_toggle_signifiers').click(toggleSignifierAbbreviations);
             $('#lnk_view_list').click(toggleListView);
             
@@ -70,17 +69,16 @@
                     $('<td>').text(record.latest.updated_at),
                     $('<td>').text(record.site),
                     $('<td>').text(record.title),
-                    $('<td>').html(`<a href="https://${record.url}" target="_blank">${record.url.substr(0, 20)}...</a>`),
-                    $('<td>').html(`<a href="${record.versionista_url}" target="_blank">${record.versionista_url.substr(-15)}</a>`),
-                    $('<td>').html(`<a href="${record.latest.diff_with_previous_url}" target="_blank">${record.latest.diff_with_previous_url.substr(-15)}</a>`),
-                    $('<td>').html(`<a href="${diff_with_first_url}" target="_blank">${diff_with_first_url.substr(-15)}</a>`)
+                    $('<td>').html(`<a href="https://${record.url}" target="_blank" rel="noopener">${record.url.substr(0, 20)}...</a>`),
+                    $('<td>').html(`<a href="${record.versionista_url}" target="_blank" rel="noopener">${record.versionista_url.substr(-15)}</a>`),
+                    $('<td>').html(`<a href="${record.latest.diff_with_previous_url}" target="_blank" rel="noopener">${record.latest.diff_with_previous_url.substr(-15)}</a>`),
+                    $('<td>').html(`<a href="${diff_with_first_url}" target="_blank" rel="noopener">${diff_with_first_url.substr(-15)}</a>`)
                 );
 
                 row.click(function() {
                     showPage(record);
                     setPagination(row.data('prev_record'), row.data('next_record'));
                 });
-
                 return row;
             }
 
@@ -135,7 +133,7 @@
                     title = record.title || 'No title',
                     url = record.url || 'No url';
 
-                $('#diff_title').text(`${version_id} - ${title} : `);
+                $('#diff_title').text(`${version_id} - ${title}`);
                 $('#diff_page_url').attr('href', `https://${url}`).text(`${url.substr(0, 40)}...`).attr('target', '_blank');
 
                 // Get annotations and check checkboxes

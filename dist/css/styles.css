@@ -1,16 +1,3 @@
-body.fixed-to-top-offset { 
-    padding-top: 30rem; 
-}
-
-.navbar .brand {
-    display: block;
-    float: left;
-    padding: 10px 20px 10px;
-    font-size: 3rem;
-    font-weight: 200;
-    text-decoration: none;
-}
-
 #bootstrap-override .navbar-brand {
     font-size: 1.4em;
     margin-right: 6px;
@@ -34,12 +21,26 @@ body.fixed-to-top-offset {
     display: none;
 }
 
+.diff-title {
+    font-size: 20px;
+}
+
+.pager {
+    margin: 10px 0;
+}
 .pager li > a {
-    border-radius: 6px;
+    border-radius: 0;
+}
+
+#bootstrap-override .pager li>a:focus {
+    background-color: transparent;
+}
+
+#bootstrap-override .pager li>a:hover {
+    background-color: #EEE;
 }
 
 #inspectorView {
-    color: white;
     margin-bottom: 10px;
 }
 
@@ -60,6 +61,21 @@ body.fixed-to-top-offset {
 
 #tbl_list_view tbody tr:hover {
     background-color: #EEE;
+}
+
+#prev_index {
+    width: 50%;
+}
+
+#next_index {
+    width: 48%;
+}
+
+@media (max-width: 990px) {
+    .short-view div {
+        clear: both;
+        overflow: auto;
+    }
 }
 
 .short-view label {
