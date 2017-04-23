@@ -8,6 +8,7 @@
     "express": "^4.14.1"
   },
   "devDependencies": {
+    "@types/bootbox": "^4.4.32",
     "@types/core-js": "^0.9.35",
     "@types/gapi": "0.0.31",
     "@types/gapi.auth2": "0.0.35",

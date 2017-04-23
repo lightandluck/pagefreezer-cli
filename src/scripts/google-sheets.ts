@@ -1,6 +1,6 @@
 // Initializes Google Apis and exports GoogleAuth object for us to use.
-export let GoogleAuth: gapi.auth2.GoogleAuth,
-    SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
+export let  GoogleAuth: gapi.auth2.GoogleAuth,
+            SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 
 $(document).ready(() => {
     handleClientLoad();
@@ -9,6 +9,30 @@ $(document).ready(() => {
     });
     $('#revoke-access-button').click(function () {
         revokeAccess();
+    });
+
+    $('#settings').click(function() {
+        return $.get('settings.html', function(data) {
+            bootbox.dialog({
+                title: 'Settings',
+                message: data,
+                buttons: {
+                    "Save": {
+                        className: 'btn-success',
+                        callback: function() {
+                        localStorage.setItem('dictionary_path', $('#dictionary_path').val());
+                        localStorage.setItem('important_changes_path', $('#important_changes_path').val());
+                        }
+                    },
+                    "Cancel": {
+                        className: 'btn-default'
+                    }
+                }
+            });
+
+            $('#dictionary_path').val(localStorage.getItem('dictionary_path'));
+            $('#important_changes_path').val(localStorage.getItem('important_changes_path'));
+        });
     });
 });
 
