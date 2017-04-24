@@ -38,6 +38,24 @@ $(document).ready(() => {
             $('#dictionary_url').attr('href', dictionary_url);
         });
     });
+
+    $('#lnk_add_important_change').click(function() {
+        let spreadsheetId = '1YK_kRUg8Za7ynTVbD70At39a_osnzhJBI2NfkLSGvtM';
+        let range = 'Important Changes';
+
+        var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED`);
+
+        var values = {
+            "values": [
+                    ["test", "hello", "world"]
+                ]
+            }
+
+        makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+            if (err) return console.log(err);
+            console.log('Record exported.');
+        });
+    });
 });
 
 function handleClientLoad() {
@@ -104,4 +122,26 @@ function updateSigninStatus(isSignedIn: boolean) {
     }
 }
 
+function makeRequest(method: string, url:string, value: any, callback: any) {
+  var auth = gapi.auth2.getAuthInstance();
+  if (!auth.isSignedIn.get()) {
+    return callback(new Error('Signin required.'));
+  }
+  var accessToken = auth.currentUser.get().getAuthResponse().access_token;
+  $.ajax(url, {
+    method: method,
+    data: value,
+    dataType: 'json',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken,
+      'Content-Type': 'application/json'
+    },
+    success: function(response) {
+      return callback(null, response);
+    },
+    error: function(response) {
+      return callback(new Error(response.responseJSON.message));
+    }
+  });
+}
 
