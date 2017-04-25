@@ -8,10 +8,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {GoogleAuth} from "./google-sheets";
+import {GoogleAuth} from './google-auth';
 
 $(document).ready(function() {
-    console.log("ready");
+    console.log('ready');
 
     // TODO: determine if old function calls are needed
     // toggleProgressbar(false);
@@ -68,11 +68,11 @@ function loadIframe(html_embed: string) {
     iframe.onload = function() {
         // inject diff.css to highlight <ins> and <del> elements
         var frm = (frames as any)['diff_view'].contentDocument;
-        var otherhead = frm.getElementsByTagName("head")[0];
-        var link = frm.createElement("link");
-        link.setAttribute("rel", "stylesheet");
-        link.setAttribute("type", "text/css");
-        link.setAttribute("href", `${window.location.origin}/css/diff.css`);
+        var otherhead = frm.getElementsByTagName('head')[0];
+        var link = frm.createElement('link');
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('type', 'text/css');
+        link.setAttribute('href', `${window.location.origin}/css/diff.css`);
         otherhead.appendChild(link);
 
         // set iframe height = frame content
