@@ -7,20 +7,15 @@ $(document).ready(() => {
                 buttons: {
                     "Save": {
                         className: 'btn-success',
-                        callback: setItems
+                        callback: savePaths
                     },
                     "Cancel": {
                         className: 'btn-default'
                     }
                 }
             });
-            let changes_url = localStorage.getItem('important_changes_path');
-            let dictionary_url = localStorage.getItem('dictionary_path');
-
-            $('#important_changes_path').val(changes_url);
-            $('#changes_url').attr('href', changes_url);
-            $('#dictionary_path').val(dictionary_url);
-            $('#dictionary_url').attr('href', dictionary_url);
+            
+            getPaths();
         });
     });
 
@@ -43,11 +38,26 @@ $(document).ready(() => {
     });
 });
 
-function setItems() {
+function savePaths() {
     localStorage.setItem('important_changes_path', $('#important_changes_path').val());
     localStorage.setItem('dictionary_path', $('#dictionary_path').val());
+    localStorage.setItem('analyst_sheet_path', $('#analyst_sheet_path').val());
 }
 
+function getPaths() {
+    let changes_url = localStorage.getItem('important_changes_path');
+    let dictionary_url = localStorage.getItem('dictionary_path');
+    let analyst_url = localStorage.getItem('analyst_sheet_path');
+
+    $('#analyst_sheet_path').val(analyst_url);
+    $('#anaylst_sheet_url').attr('href', analyst_url);
+
+    $('#important_changes_path').val(changes_url);
+    $('#important_changes_url').attr('href', changes_url);
+
+    $('#dictionary_path').val(dictionary_url);
+    $('#dictionary_url').attr('href', dictionary_url);
+}
 function getSpreadsheetId(url: string) {
 
 }
