@@ -1,8 +1,22 @@
-function getTableRow(record: any) {
+export function getList() {
+    let sheetID = localStorage.getItem('analyst_spreadsheetId');
+    let range = 'A7:AE';
+
+    var path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}`;
+    gapi.client.request({
+        'path': path,
+    }).then(function (response: any) {
+        console.log(response);
+    }, function (response: any) {
+        console.error('Error: fix me');
+    });
+}
+
+export function getTableRow(record: any) {
 
 }
 
-function showPage(row_index: number) {
+export function showPage(row_index: number) {
     // link to test spreadsheet: https://docs.google.com/spreadsheets/d/17QA_C2-XhLefxZlRKw74KDY3VNstbPvK3IHWluDJMGQ/edit#gid=0
     var sheetID = '17QA_C2-XhLefxZlRKw74KDY3VNstbPvK3IHWluDJMGQ'
     var range = `A${row_index}:AG${row_index}`
@@ -35,15 +49,15 @@ function showPage(row_index: number) {
     });
 }
 
-function updateRecord() {
+export function updateRecord() {
 
 }
 
-function showMetadata() {
+export function showMetadata() {
 
 }
 
-function setPagination() {
+export function setPagination() {
 
 }
 

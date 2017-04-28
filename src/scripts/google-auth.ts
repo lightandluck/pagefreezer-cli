@@ -1,4 +1,6 @@
 // Initializes Google Apis and exports GoogleAuth object for us to use.
+export let gapiCallbacks: any[] = [];
+
 export let  GoogleAuth: gapi.auth2.GoogleAuth,
             SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 
@@ -41,9 +43,22 @@ function initClient() {
 
             // Handle initial sign-in state. (Determine if user is already signed in.)
             updateSigninStatus(false);
-        });
+        }).then(gapiLoaded);
     })
     .fail(() => console.log('Could not load config.json'));
+}
+
+function gapiLoaded(){
+    var GapiQueue = function () {
+        this.push = function (callback: any) {
+            setTimeout(callback, 0);
+        };
+    };
+    var _old_gapiCallbacks = gapiCallbacks;
+    gapiCallbacks = new GapiQueue();
+    _old_gapiCallbacks.forEach(function (callback) {
+        gapiCallbacks.push(callback);
+    });
 }
 
 export function handleAuthClick() {
@@ -71,5 +86,17 @@ function updateSigninStatus(isSignedIn: boolean) {
         $('#sign-in-or-out-button').html('Sign In');
         $('#auth-status').html('');
     }
+}
+
+// TODO - understand how to construct class so typescript compiles
+// // Quick type for GapiQueue 
+declare class GapiQueue {
+    /** Constructor returning a GapiQueue object. */
+    constructor(init?: string);
+
+    /** Returns the first value associated to the given search parameter. */
+    get(name: string): string;
+
+    push(callback: any): any;
 }
 

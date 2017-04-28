@@ -13,7 +13,11 @@
 
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://apis.google.com/js/api.js"></script>
+
+        <script> 
+            window.gapiCallbacks=[];
+        </script>
+        <script src="https://apis.google.com/js/api.js?onload=gapiLoaded"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
         <script type="text/javascript" src="bundle.js"></script>
         
