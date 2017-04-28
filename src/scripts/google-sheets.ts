@@ -2,6 +2,8 @@ $(document).ready(() => {
     $('#settings').click(handleSettings); 
     $('#lnk_add_important_change').click(handleAddImportantChange);
     $('#lnk_add_dictionary').click(handleAddDictionary);
+
+    //TODO - create init function to show settings if none exist
 });
 
 function handleSettings() {
@@ -90,7 +92,7 @@ function getPaths() {
     let dictionary_path = localStorage.getItem('dictionary_path');
 
     $('#analyst_sheet_path').val(analyst_sheet_path);
-    $('#anaylst_sheet_url').attr('href', analyst_sheet_path);
+    $('#analyst_sheet_url').attr('href', analyst_sheet_path);
 
     $('#important_changes_path').val(important_changes_path);
     $('#important_changes_url').attr('href', important_changes_path);
