@@ -1,5 +1,5 @@
 // Initializes Google Apis and exports GoogleAuth object for us to use.
-export let gapiCallbacks: any[] = [];
+export let gapiCallbacks: any = [];
 
 export let  GoogleAuth: gapi.auth2.GoogleAuth,
             SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
@@ -49,12 +49,12 @@ function initClient() {
 }
 
 function gapiLoaded(){
-    var GapiQueue = function () {
+    let GapiQueue = function () {
         this.push = function (callback: any) {
             setTimeout(callback, 0);
         };
     };
-    var _old_gapiCallbacks = gapiCallbacks;
+    let _old_gapiCallbacks = gapiCallbacks;
     gapiCallbacks = new GapiQueue();
     _old_gapiCallbacks.forEach(function (callback) {
         gapiCallbacks.push(callback);
@@ -93,10 +93,6 @@ function updateSigninStatus(isSignedIn: boolean) {
 declare class GapiQueue {
     /** Constructor returning a GapiQueue object. */
     constructor(init?: string);
-
-    /** Returns the first value associated to the given search parameter. */
-    get(name: string): string;
-
     push(callback: any): any;
 }
 

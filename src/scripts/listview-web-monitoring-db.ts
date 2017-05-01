@@ -149,3 +149,21 @@ $(document).ready(function() {
         } else { $('#next_index').hide() }
     }
 });
+
+function toggleListView() {
+    $('#container_list_view').show();
+    $('#container_page_view').hide();
+}
+
+function togglePageView() {
+    $('#container_list_view').hide();
+    $('#container_page_view').show();
+}
+
+function toggleProgressbar(isVisible: boolean) {
+    if(isVisible) {
+        $('.progress').show();
+    } else {
+        $('.progress').hide();
+    }
+}
