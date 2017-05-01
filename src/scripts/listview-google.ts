@@ -1,8 +1,9 @@
 import {gapiCallbacks} from './google-auth';
+import {makeRequest} from './google-sheets';
 
 export function getList(): Promise<any> {
     let sheetID = localStorage.getItem('analyst_spreadsheetId');
-    let range = 'A7:AE';
+    let range = 'A7:AE'; 
     var path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}`;
 
     return new Promise(function(resolve, reject) {
@@ -38,11 +39,11 @@ export function getTableRow(row_data: any[]) {
 }
 
 export function showPage(row_index: number) {
-    const sheetID = localStorage.getItem('analyst_spreadsheetId');
+    const sheetId = localStorage.getItem('analyst_spreadsheetId');
     const range = `A${row_index}:AE${row_index}`
 
     // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
-    const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}`;
+    const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
 
     gapiCallbacks.push(function() {
         gapi.client.request({
@@ -53,6 +54,7 @@ export function showPage(row_index: number) {
             // 2) Read/write docs: https://developers.google.com/sheets/api/guides/values
 
             const values = response.result.values;
+
             if (values) {
                 togglePageView();
                 let row_data = values[0];
@@ -63,20 +65,23 @@ export function showPage(row_index: number) {
                 $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
                 $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
 
-                // $('#lnk_update_record').off('click').on('click', function() {
-                //     let annotations = [];
-                //     // Build up annotations object
-                //     $('#inspectorView input[type="checkbox"]').each(function() {
-                //         annotations[this.id] = this.checked;
-                //     })
-                //     // TODO - implement update
-                //     // update(page_id, version_id, annotations);
-                // });
+                $('#lnk_update_record').off('click').on('click', function() {
+                    let annotations: any = {};
+                    let update_values: string[] = [];
+                    annotations.values = [];
+                    
+                    // Build up annotations object
+                    $('#inspectorView input[type="checkbox"]').each(function() {
+                        update_values.push((this.checked) ? "y" : "");
+                    })
+                    annotations.values.push(update_values);
+                    updateRecord(row_index, sheetId, annotations);
+                });
 
                 showMetadata(row_data);
                 
             } else {
-                $('#diff_title').text('No data found')
+                alert('No data found')
             }
         }, function (response: any) {
             console.error('Error: ' + response.result.error.message);
@@ -84,8 +89,14 @@ export function showPage(row_index: number) {
     });
 }
 
-export function updateRecord() {
+export function updateRecord(row_index: number, sheetId: string, values: any[]) {
+    let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
 
+    makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
+        if (err) return console.log(err);
+        alert('Signifiers updated.');
+    });
 }
 
 export function showMetadata(row_data: any) {
@@ -123,24 +134,24 @@ function togglePageView() {
 
 class Annotations {
     [key: string]: boolean;
-    cbox_indiv_1: boolean;
-    cbox_indiv_2: boolean;
-    cbox_indiv_3: boolean;
-    cbox_indiv_4: boolean;
-    cbox_indiv_5: boolean;
-    cbox_indiv_6: boolean;
-    cbox_repeat_7: boolean;
-    cbox_repeat_8: boolean;
-    cbox_repeat_9: boolean;
-    cbox_repeat_10: boolean;
-    cbox_repeat_11: boolean;
-    cbox_repeat_12: boolean;
-    cbox_sig_1: boolean;
-    cbox_sig_2: boolean;
-    cbox_sig_3: boolean;
-    cbox_sig_4: boolean;
-    cbox_sig_5: boolean;
-    cbox_sig_6: boolean;
+    public cbox_indiv_1: boolean;
+    public cbox_indiv_2: boolean;
+    public cbox_indiv_3: boolean;
+    public cbox_indiv_4: boolean;
+    public cbox_indiv_5: boolean;
+    public cbox_indiv_6: boolean;
+    public cbox_repeat_7: boolean;
+    public cbox_repeat_8: boolean;
+    public cbox_repeat_9: boolean;
+    public cbox_repeat_10: boolean;
+    public cbox_repeat_11: boolean;
+    public cbox_repeat_12: boolean;
+    public cbox_sig_1: boolean;
+    public cbox_sig_2: boolean;
+    public cbox_sig_3: boolean;
+    public cbox_sig_4: boolean;
+    public cbox_sig_5: boolean;
+    public cbox_sig_6: boolean;
     
     constructor(signifiers: boolean[]) {
         this.cbox_indiv_1 = Boolean(signifiers[0]);

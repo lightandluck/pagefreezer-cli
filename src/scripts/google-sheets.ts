@@ -1,3 +1,5 @@
+import {gapiCallbacks} from './google-auth';
+
 $(document).ready(() => {
     $('#settings').click(handleSettings); 
     $('#lnk_add_important_change').click(handleAddImportantChange);
@@ -44,8 +46,8 @@ function handleAddImportantChange(e: any) {
 
 function handleAddDictionary() {
     
-    let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+    let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N7:AE7?valueInputOption=USER_ENTERED`);
 
     var values = {
         "values": [
@@ -53,7 +55,7 @@ function handleAddDictionary() {
             ]
         }
 
-    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+    makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
         if (err) return console.log(err);
         alert('Dictionary exported.');
     });
@@ -114,26 +116,28 @@ function getWorksheetId(url: string) {
 }
 
 //TODO: maybe - install npm lib for gapi and use that instead
-function makeRequest(method: string, url:string, data: any, callback: any) {
-  var auth = gapi.auth2.getAuthInstance();
-  if (!auth.isSignedIn.get()) {
-    return callback(new Error('Signin required.'));
-  }
-  var accessToken = auth.currentUser.get().getAuthResponse().access_token;
-  $.ajax(url, {
-    method: method,
-    data: data,
-    dataType: 'json',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken,
-      'Content-Type': 'application/json'
-    },
-    success: function(response) {
-      return callback(null, response);
-    },
-    error: function(response) {
-      return callback(new Error(response.responseJSON.message));
-    }
-  });
+export function makeRequest(method: string, url:string, data: any, callback: any) {
+    gapiCallbacks.push(() => {
+        var auth = gapi.auth2.getAuthInstance();
+        if (!auth.isSignedIn.get()) {
+            return callback(new Error('Signin required.'));
+        }
+        var accessToken = auth.currentUser.get().getAuthResponse().access_token;
+        $.ajax(url, {
+            method: method,
+            data: data,
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                return callback(null, response);
+            },
+            error: function(response) {
+                return callback(new Error(response.responseJSON.message));
+            }
+        });
+    });
 }
 
