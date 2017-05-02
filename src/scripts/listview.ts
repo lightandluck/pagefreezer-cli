@@ -29,9 +29,12 @@ $(document).ready(function() {
                 }
                 
                 let row = list_google.getTableRow(record);
-                row.data('row_index', index + data_start_index);
-                // row.data('prev_record', records[index-1]);
-                // row.data('next_record', records[index+1]);
+                let row_index = index + data_start_index
+                
+                row.data('row_index', row_index);
+                row.data('current_record', record);
+                row.data('prev_record', records[index-1]);
+                row.data('next_record', records[index+1]);
                 tbody.append(row);
             })
             toggleProgressbar(false);
