@@ -32,8 +32,9 @@ export function getTableRow(row_data: any[]) {
     );
 
     row.click(function() {
-        showPage(parseInt(row.data('row_index'), 10));
-        // setPagination(row.data('prev_record'), row.data('next_record'));
+        let row_index = parseInt(row.data('row_index'), 10);
+        showPage(row_index);
+        setPagination(row_index - 1, row_index + 1);
     });
     return row;
 }
@@ -81,7 +82,8 @@ export function showPage(row_index: number) {
                 showMetadata(row_data);
                 
             } else {
-                alert('No data found')
+                setPagination(row_index - 2, row_index);
+                alert('No data found');
             }
         }, function (response: any) {
             console.error('Error: ' + response.result.error.message);
@@ -123,8 +125,21 @@ export function showMetadata(row_data: any) {
     }  
 }
 
-export function setPagination() {
+export function setPagination(prev_row_index: number, next_row_index: number) {
+    // we assume records start at row 7
+    const min_row_index = 7; 
 
+    if (prev_row_index >= min_row_index) {
+        $('#prev_index').show().off().click(() => {
+            showPage(prev_row_index);
+            setPagination(prev_row_index - 1, prev_row_index + 1);
+        })
+    } else $('#prev_index').hide();
+
+    $('#next_index').show().off().click(function() {
+        showPage(next_row_index);
+        setPagination(next_row_index - 1, next_row_index + 1);
+    })
 }
 
 function togglePageView() {
