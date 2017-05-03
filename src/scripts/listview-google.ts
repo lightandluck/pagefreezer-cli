@@ -4,6 +4,8 @@ import {makeRequest} from './google-auth';
 $(document).ready(function() {
     $('#lnk_toggle_signifiers').click(toggleSignifierAbbreviations);
     $('#lnk_view_list').click(toggleListView); 
+    $('#inspectorView input[type="checkbox"]').on('click.resetlinktext', resetlinktext);
+
 
     //TODO - understand how this magic works!
     // https://advancedweb.hu/2015/05/12/using-google-auth-in-javascript/
@@ -57,6 +59,12 @@ function toggleSignifierAbbreviations(e: any) {
     e.preventDefault();
     $('.info-text').toggle();
     $('#inspectorView').toggleClass('short-view');
+}
+
+function resetlinktext() {
+    $('#lnk_update_record').text('Update Record');
+    $('#lnk_add_important_change').text('Add Important Change');
+    $('#lnk_add_dictionary').text('Add to Dictionary');
 }
 /* END - page handlers */
 
@@ -137,7 +145,7 @@ function showPage(row_index: number) {
             updateRecord(row_index, sheetId, annotations);
         });
 
-        showMetadata(row_data);
+        showMetadata(row_data, row_index);
     }).catch(function(err) {
         setPagination(row_index - 2, row_index);
         alert('No data found');
@@ -175,7 +183,7 @@ function getRow(row_index: number): Promise<any> {
     });
 }
 
-function showMetadata(row_data: any) {
+function showMetadata(row_data: string[], row_index: number) {
     let version_id = row_data[0] || 'No index',
         title = row_data[5] || 'No title',
         url = row_data[6] || 'No url';
@@ -186,10 +194,10 @@ function showMetadata(row_data: any) {
         .attr('rel', 'noopener');
 
     $('#lnk_add_important_change').off().click(() => {
-        handleAddImportantChange(row_data);
+        handleAddImportantChange(row_index);
     });
     $('#lnk_add_dictionary').off().click(() => {
-        handleAddDictionary(row_data);
+        handleAddDictionary(row_index);
     });
 
     let signifiers = row_data.slice(13, 31);
@@ -234,45 +242,49 @@ function updateRecord(row_index: number, sheetId: string, values: any[]) {
     });
 }
 
-function handleAddImportantChange(row_data: string[]) {
-    let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+function handleAddImportantChange(row_index: number) {
+    getRow(row_index).then((row_data) => {
+        let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
+        var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
 
-    let change = Array.from(row_data);
-    change.splice(12, 0, "", "");
-    change.unshift("0");
+        let change = Array.from(row_data);
+        change.splice(12, 0, "", "");
+        change.unshift("0");
 
-    let values: any = {
-        "values": [
-            change
-        ]
-    };
+        let values: any = {
+            "values": [
+                change
+            ]
+        };
 
-    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
-        if (err) return alert(err);
-        alert('Change exported.');
+        makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+            if (err) return alert(err);
+            $('#lnk_add_important_change').text('Change exported');
+        });
     });
 }
 
-function handleAddDictionary(row_data: string[]) {
-    
-    let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+function handleAddDictionary(row_index: number) {
+    getRow(row_index).then((row_data) => {
+        let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
+        var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
 
-    let change = Array.from(row_data);
-    change.splice(12, 0, "", "");
-    change.unshift("0");
+        let change = Array.from(row_data);
+        change.splice(12, 0, "", "");
+        change.unshift("0");
 
-    let values: any = {
-        "values": [
-            change
-        ]
-    };
+        let values: any = {
+            "values": [
+                change
+            ]
+        };
 
-    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
-        if (err) return alert(err);
-        alert('Dictionary exported.');
+        makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+            if (err) return alert(err);
+            $('#lnk_add_dictionary').text('Dictionary exported');
+        });
     });
+    
 }
 /* END - page view functions */
 
@@ -298,7 +310,7 @@ class Annotations {
     public cbox_sig_5: boolean;
     public cbox_sig_6: boolean;
     
-    constructor(signifiers: boolean[]) {
+    constructor(signifiers: string[]) {
         this.cbox_indiv_1 = Boolean(signifiers[0]);
         this.cbox_indiv_2 = Boolean(signifiers[1]);
         this.cbox_indiv_3 = Boolean(signifiers[2]);

@@ -85,7 +85,8 @@ function updateSigninStatus(isSignedIn: boolean) {
     }
 }
 
-//TODO: maybe - install npm lib for gapi and use that instead
+// TODO: maybe - install npm lib for gapi and use that instead
+// TODO: change into Promise
 export function makeRequest(method: string, url:string, data: any, callback: any) {
     gapiCallbacks.push(() => {
         var auth = gapi.auth2.getAuthInstance();
