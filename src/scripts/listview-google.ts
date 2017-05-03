@@ -58,7 +58,6 @@ function toggleSignifierAbbreviations(e: any) {
     $('.info-text').toggle();
     $('#inspectorView').toggleClass('short-view');
 }
-
 /* END - page handlers */
 
 /* List view functions */
@@ -114,7 +113,7 @@ function getTableRow(row_data: any[]) {
 /* END - list view functions */
 
 /* Page view functions */
-function showPage(row_index: number) {
+function showPage_old(row_index: number) {
     const sheetId = localStorage.getItem('analyst_spreadsheetId');
     const range = `A${row_index}:AE${row_index}`
 
@@ -166,27 +165,92 @@ function showPage(row_index: number) {
     });
 }
 
-function getRow(row_index: number) {
+function showPage(row_index: number) {
+    const sheetId = localStorage.getItem('analyst_spreadsheetId');
+    getRow(row_index).then(function(row_data) {
+        togglePageView();
+        let diff_with_previous_url = row_data[8];
+        let diff_with_first_url = row_data[9] || '';
+
+        // populate versionista links
+        $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
+        $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
+
+        $('#lnk_update_record').off('click').on('click', function() {
+            let annotations: any = {};
+            let update_values: string[] = [];
+            annotations.values = [];
+            
+            // Build up annotations object
+            $('#inspectorView input[type="checkbox"]').each(function() {
+                update_values.push((this.checked) ? "y" : "");
+            })
+            annotations.values.push(update_values);
+            updateRecord(row_index, sheetId, annotations);
+        });
+
+        showMetadata(row_data);
+    }).catch(function(err) {
+        setPagination(row_index - 2, row_index);
+        alert('No data found');
+    });
+    // getRow(row_index).then(function(values) {
+    //     togglePageView();
+    //             let row_data = values[0];
+    //             let diff_with_previous_url = row_data[8];
+    //             let diff_with_first_url = row_data[9] || '';
+
+    //             // populate versionista links
+    //             $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
+    //             $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
+
+    //             $('#lnk_update_record').off('click').on('click', function() {
+    //                 let annotations: any = {};
+    //                 let update_values: string[] = [];
+    //                 annotations.values = [];
+                    
+    //                 // Build up annotations object
+    //                 $('#inspectorView input[type="checkbox"]').each(function() {
+    //                     update_values.push((this.checked) ? "y" : "");
+    //                 })
+    //                 annotations.values.push(update_values);
+    //                 updateRecord(row_index, sheetId, annotations);
+    //             });
+
+    //             showMetadata(row_data);
+    // }).catch(function(error) {
+    //     setPagination(row_index - 2, row_index);
+    //     alert('No data found');
+    // });
+}
+
+function getRow(row_index: number): Promise<any> {
     const sheetId = localStorage.getItem('analyst_spreadsheetId');
     const range = `A${row_index}:AE${row_index}`
 
     // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
     const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
 
-    gapiCallbacks.push(function() {
-        gapi.client.request({
-            'path': path,
-        }).then(function (response: any) {
-            const values = response.result.values;
-
-            if (values) {
-                return Promise.resolve(values);
-                
-            } else {
-                return Promise.reject(`Error: ${response.result.error.message}`);
-            }
-        }, function (response: any) {
-            return Promise.reject(`Error: ${response.result.error.message}`);
+    return new Promise(function(resolve, reject) {
+        gapiCallbacks.push(function() {
+            gapi.client.request({
+                'path': path,
+            }).then(function (response: any) {
+                const values = response.result.values;
+                if (values) {
+                    const totalRecordLength = 31;
+                    let record = values[0];
+                    if (record.length < totalRecordLength) {
+                        let i = totalRecordLength - record.length;
+                        while (i-- > 0) record.push("");
+                    }
+                    resolve(record);
+                } else {
+                    reject(`Error: No Data found`);
+                }
+            }, function (response: any) {
+                reject(`Error: No Data found`);
+            });
         });
     });
 }
