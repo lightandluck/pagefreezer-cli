@@ -31,7 +31,6 @@ $(document).ready(function() {
                 
                 let row = getTableRow(record);
                 row.data('row_index', index + data_start_index);
-                row.data('current_record', record)
                 tbody.append(row);
             })
             toggleProgressbar(false);
@@ -115,6 +114,7 @@ function getTableRow(row_data: any[]) {
         let row_index = parseInt(row.data('row_index'), 10);
         showPage(row_index);
         setPagination(row_index - 1, row_index + 1);
+        resetlinktext();
     });
     return row;
 }
@@ -232,17 +232,22 @@ function setPagination(prev_row_index: number, next_row_index: number) {
 }
 
 function updateRecord(row_index: number, sheetId: string, values: any[]) {
+    const $lnk = $('#lnk_update_record');
+    $lnk.text('Updating').addClass('dotdotdot');
+
     let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
     var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
 
     makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
-        if (err) return console.log(err);
-        $('#lnk_update_record').text('Updated!');
-        // alert('Signifiers updated.');
+        if (err) return alert(err);
+        $('#lnk_update_record').text('Updated!').removeClass('dotdotdot');
     });
 }
 
 function handleAddImportantChange(row_index: number) {
+    const $lnk = $('#lnk_add_important_change');
+    $lnk.text('Exporting').addClass('dotdotdot');
+
     getRow(row_index).then((row_data) => {
         let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
         var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
@@ -259,12 +264,18 @@ function handleAddImportantChange(row_index: number) {
 
         makeRequest('POST', url, JSON.stringify(values), function(err: any) {
             if (err) return alert(err);
-            $('#lnk_add_important_change').text('Change exported');
+            $lnk.text('Change exported').removeClass('dotdotdot');
         });
+    }).catch((err) => {
+        $lnk.text('Add Important Change').removeClass('dotdotdot');
+        alert(err);
     });
 }
 
 function handleAddDictionary(row_index: number) {
+    const $lnk = $('#lnk_add_dictionary');
+    $lnk.text('Exporting').addClass('dotdotdot');
+
     getRow(row_index).then((row_data) => {
         let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
         var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
@@ -281,8 +292,11 @@ function handleAddDictionary(row_index: number) {
 
         makeRequest('POST', url, JSON.stringify(values), function(err: any) {
             if (err) return alert(err);
-            $('#lnk_add_dictionary').text('Dictionary exported');
+            $lnk.text('Dictionary exported').removeClass('dotdotdot');
         });
+    }).catch((err) => {
+        $lnk.text('Add to Dictionary').removeClass('dotdotdot');
+        alert(err);
     });
     
 }
