@@ -82,7 +82,7 @@ export function updateRecord(row_index: number, sheetId: string, values: any[]) 
     var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
 
     makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
-        if (err) return alert(err);
+        if (err) return console.log(err);
         alert('Signifiers updated.');
     });
 }
@@ -132,47 +132,6 @@ export function setPagination(prev_record: string[], next_record: string[]) {
 function togglePageView() {
     $('#container_list_view').hide();
     $('#container_page_view').show();
-}
-
-function handleAddImportantChange(row_data: string[]) {
-    let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
-
-    let change = Array.from(row_data);
-    change.splice(12, 0, "", "");
-    change.unshift("0");
-
-    let values: any = {
-        "values": [
-            change
-        ]
-    };
-
-    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
-        if (err) return alert(err);
-        alert('Change exported.');
-    });
-}
-
-function handleAddDictionary(row_data: string[]) {
-    
-    let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
-
-    let change = Array.from(row_data);
-    change.splice(12, 0, "", "");
-    change.unshift("0");
-
-    let values: any = {
-        "values": [
-            change
-        ]
-    };
-
-    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
-        if (err) return alert(err);
-        alert('Dictionary exported.');
-    });
 }
 
 class Annotations {

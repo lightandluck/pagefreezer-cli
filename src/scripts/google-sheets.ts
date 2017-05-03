@@ -2,6 +2,9 @@ import {gapiCallbacks} from './google-auth';
 
 $(document).ready(() => {
     $('#settings').click(handleSettings); 
+    $('#lnk_add_important_change').click(handleAddImportantChange);
+    $('#lnk_add_dictionary').click(handleAddDictionary);
+
     //TODO - create init function to show settings if none exist
 });
 
@@ -21,6 +24,40 @@ function handleSettings() {
             }
         });
         getPaths();
+    });
+}
+
+function handleAddImportantChange(e: any) {
+    console.log(e);
+    let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+
+    var values = {
+        "values": [
+                ["test", "hello", "world"]
+            ]
+        }
+
+    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+        if (err) return console.log(err);
+        alert('Change exported.');
+    });
+}
+
+function handleAddDictionary() {
+    
+    let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N7:AE7?valueInputOption=USER_ENTERED`);
+
+    var values = {
+        "values": [
+                ["test", "hello", "world"]
+            ]
+        }
+
+    makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
+        if (err) return console.log(err);
+        alert('Dictionary exported.');
     });
 }
 

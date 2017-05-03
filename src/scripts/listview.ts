@@ -30,7 +30,7 @@ $(document).ready(function() {
                 
                 let row = list_google.getTableRow(record);
                 let row_index = index + data_start_index
-
+                
                 row.data('row_index', row_index);
                 row.data('current_record', record);
                 row.data('prev_record', records[index-1]);
@@ -38,8 +38,6 @@ $(document).ready(function() {
                 tbody.append(row);
             })
             toggleProgressbar(false);
-        }).catch(function(err) {
-            alert(err);
         }); 
     });
 });
