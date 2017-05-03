@@ -34,12 +34,64 @@ export function getTableRow(row_data: any[]) {
     row.click(function() {
         let row_index = parseInt(row.data('row_index'), 10);
         showPage(row.data('current_record'), row_index);
-        setPagination(row.data('prev_record'), row.data('next_record'));
+        // setPagination(row_index - 1, row_index + 1);
     });
     return row;
 }
 
-export function showPage(row_data: string[], row_index: number) {
+// export function showPage_byIndex(row_index: number) {
+//     const sheetId = localStorage.getItem('analyst_spreadsheetId');
+//     const range = `A${row_index}:AE${row_index}`
+
+//     // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
+//     const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
+
+//     gapiCallbacks.push(function() {
+//         gapi.client.request({
+//             'path': path,
+//         }).then(function (response: any) {
+//             // If we need to write to spreadsheets: 
+//             // 1) Get started: https://developers.google.com/sheets/api/quickstart/js
+//             // 2) Read/write docs: https://developers.google.com/sheets/api/guides/values
+
+//             const values = response.result.values;
+
+//             if (values) {
+//                 togglePageView();
+//                 let row_data = values[0];
+//                 let diff_with_previous_url = row_data[8];
+//                 let diff_with_first_url = row_data[9] || '';
+
+//                 // populate versionista links
+//                 $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
+//                 $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
+
+//                 $('#lnk_update_record').off('click').on('click', function() {
+//                     let annotations: any = {};
+//                     let update_values: string[] = [];
+//                     annotations.values = [];
+                    
+//                     // Build up annotations object
+//                     $('#inspectorView input[type="checkbox"]').each(function() {
+//                         update_values.push((this.checked) ? "y" : "");
+//                     })
+//                     annotations.values.push(update_values);
+//                     updateRecord(row_index, sheetId, annotations);
+//                 });
+
+//                 showMetadata(row_data);
+                
+//             } else {
+//                 setPagination(row_index - 2, row_index);
+//                 alert('No data found');
+//             }
+//         }, function (response: any) {
+//             console.error('Error: ' + response.result.error.message);
+//         });
+//     });
+// }
+
+export function showPage(row_data: any, row_index: number) {
     const sheetId = localStorage.getItem('analyst_spreadsheetId');
     
     if (row_data) {
@@ -51,19 +103,10 @@ export function showPage(row_data: string[], row_index: number) {
         $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
         $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
 
-        // reset handlers for exporting records
-        $('#lnk_add_important_change').off().click(() => {
-            handleAddImportantChange(row_data)
-        });
-        $('#lnk_add_dictionary').off().click(() => {
-            handleAddDictionary(row_data);
-        });
-
         $('#lnk_update_record').off('click').on('click', function() {
-            let annotations: any = {
-                "values": []
-            };
+            let annotations: any = {};
             let update_values: string[] = [];
+            annotations.values = [];
             
             // Build up annotations object
             $('#inspectorView input[type="checkbox"]').each(function() {
@@ -74,7 +117,13 @@ export function showPage(row_data: string[], row_index: number) {
         });
 
         showMetadata(row_data);
-    } 
+        
+    } else {
+        // setPagination(row_index - 2, row_index);
+        alert('No data found');
+    }
+    
+    
 }
 
 export function updateRecord(row_index: number, sheetId: string, values: any[]) {
@@ -111,23 +160,22 @@ export function showMetadata(row_data: any) {
     }  
 }
 
-export function setPagination(prev_record: string[], next_record: string[]) {
-    if (prev_record) {
-        $('#prev_index').show().off().click(function() {
-            let row = $(`#row_record_${prev_record[0]}`);
-            showPage(prev_record, row.data('row_index'));
-            setPagination(row.data('prev_record'), row.data('next_record'));
-        })
-    } else { $('#prev_index').hide(); }
+// export function setPagination(prev_row_index: number, next_row_index: number) {
+//     // we assume records start at row 7
+//     const min_row_index = 7; 
 
-    if (next_record) {
-        $('#next_index').show().off().click(function() {
-            let row = $(`#row_record_${next_record[0]}`);
-            showPage(next_record, row.data('row_index'));
-            setPagination(row.data('prev_record'), row.data('next_record'));
-        })
-    } else { $('#next_index').hide() }
-}
+//     if (prev_row_index >= min_row_index) {
+//         $('#prev_index').show().off().click(() => {
+//             showPage(prev_row_index);
+//             setPagination(prev_row_index - 1, prev_row_index + 1);
+//         })
+//     } else $('#prev_index').hide();
+
+//     $('#next_index').show().off().click(function() {
+//         showPage(next_row_index);
+//         setPagination(next_row_index - 1, next_row_index + 1);
+//     })
+// }
 
 function togglePageView() {
     $('#container_list_view').hide();
