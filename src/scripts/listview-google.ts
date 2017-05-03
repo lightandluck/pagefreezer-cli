@@ -91,7 +91,32 @@ export function showPage(row_index: number) {
     });
 }
 
-export function updateRecord(row_index: number, sheetId: string, values: any[]) {
+function getRow(row_index: number) {
+    const sheetId = localStorage.getItem('analyst_spreadsheetId');
+    const range = `A${row_index}:AE${row_index}`
+
+    // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
+    const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
+
+    gapiCallbacks.push(function() {
+        gapi.client.request({
+            'path': path,
+        }).then(function (response: any) {
+            const values = response.result.values;
+
+            if (values) {
+                return Promise.resolve(values);
+                
+            } else {
+                return Promise.reject(`Error: ${response.result.error.message}`);
+            }
+        }, function (response: any) {
+            return Promise.reject(`Error: ${response.result.error.message}`);
+        });
+    });
+}
+
+function updateRecord(row_index: number, sheetId: string, values: any[]) {
     let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
     var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
 
@@ -101,7 +126,7 @@ export function updateRecord(row_index: number, sheetId: string, values: any[]) 
     });
 }
 
-export function showMetadata(row_data: any) {
+function showMetadata(row_data: any) {
     let version_id = row_data[0] || 'No index',
         title = row_data[5] || 'No title',
         url = row_data[6] || 'No url';
@@ -110,6 +135,13 @@ export function showMetadata(row_data: any) {
     $('#diff_page_url').attr('href', (url.includes('http')) ? url : `https://${url}`)
         .text(url).attr('target', '_blank')
         .attr('rel', 'noopener');
+
+    $('#lnk_add_important_change').off().click(() => {
+        handleAddImportantChange(row_data);
+    });
+    $('#lnk_add_dictionary').off().click(() => {
+        handleAddDictionary(row_data);
+    });
 
     let signifiers = row_data.slice(13, 31);
     let annotation = new Annotations(signifiers);
@@ -140,6 +172,47 @@ export function setPagination(prev_row_index: number, next_row_index: number) {
         showPage(next_row_index);
         setPagination(next_row_index - 1, next_row_index + 1);
     })
+}
+
+function handleAddImportantChange(row_data: string[]) {
+    let spreadsheetId = localStorage.getItem('important_changes_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+
+    let change = Array.from(row_data);
+    change.splice(12, 0, "", "");
+    change.unshift("0");
+
+    let values: any = {
+        "values": [
+            change
+        ]
+    };
+
+    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+        if (err) return alert(err);
+        alert('Change exported.');
+    });
+}
+
+function handleAddDictionary(row_data: string[]) {
+    
+    let spreadsheetId = localStorage.getItem('dictionary_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/A10:append?valueInputOption=USER_ENTERED`);
+
+    let change = Array.from(row_data);
+    change.splice(12, 0, "", "");
+    change.unshift("0");
+
+    let values: any = {
+        "values": [
+            change
+        ]
+    };
+
+    makeRequest('POST', url, JSON.stringify(values), function(err: any) {
+        if (err) return alert(err);
+        alert('Dictionary exported.');
+    });
 }
 
 function togglePageView() {

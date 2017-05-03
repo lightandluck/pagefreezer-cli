@@ -30,8 +30,7 @@ $(document).ready(function() {
                 
                 let row = list_google.getTableRow(record);
                 row.data('row_index', index + data_start_index);
-                // row.data('prev_record', records[index-1]);
-                // row.data('next_record', records[index+1]);
+                row.data('current_record', record)
                 tbody.append(row);
             })
             toggleProgressbar(false);
