@@ -85,6 +85,32 @@ function updateSigninStatus(isSignedIn: boolean) {
     }
 }
 
+//TODO: maybe - install npm lib for gapi and use that instead
+export function makeRequest(method: string, url:string, data: any, callback: any) {
+    gapiCallbacks.push(() => {
+        var auth = gapi.auth2.getAuthInstance();
+        if (!auth.isSignedIn.get()) {
+            return callback(new Error('Signin required.'));
+        }
+        var accessToken = auth.currentUser.get().getAuthResponse().access_token;
+        $.ajax(url, {
+            method: method,
+            data: data,
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                return callback(null, response);
+            },
+            error: function(response) {
+                return callback(new Error(response.responseJSON.message));
+            }
+        });
+    });
+}
+
 // // Quick type for GapiQueue 
 class GapiQueue {
     push: any;

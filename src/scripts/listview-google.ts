@@ -1,5 +1,5 @@
 import {gapiCallbacks} from './google-auth';
-import {makeRequest} from './google-sheets';
+import {makeRequest} from './google-auth';
 
 export function getList(): Promise<any> {
     let sheetID = localStorage.getItem('analyst_spreadsheetId');

@@ -45,6 +45,7 @@
 }
 
 #inspectorView input[type="checkbox"] {
+    cursor: pointer;
     margin-right: 7px;
 }
 
