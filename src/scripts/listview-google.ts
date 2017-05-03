@@ -113,58 +113,6 @@ function getTableRow(row_data: any[]) {
 /* END - list view functions */
 
 /* Page view functions */
-function showPage_old(row_index: number) {
-    const sheetId = localStorage.getItem('analyst_spreadsheetId');
-    const range = `A${row_index}:AE${row_index}`
-
-    // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
-    const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
-
-    gapiCallbacks.push(function() {
-        gapi.client.request({
-            'path': path,
-        }).then(function (response: any) {
-            // If we need to write to spreadsheets: 
-            // 1) Get started: https://developers.google.com/sheets/api/quickstart/js
-            // 2) Read/write docs: https://developers.google.com/sheets/api/guides/values
-
-            const values = response.result.values;
-
-            if (values) {
-                togglePageView();
-                let row_data = values[0];
-                let diff_with_previous_url = row_data[8];
-                let diff_with_first_url = row_data[9] || '';
-
-                // populate versionista links
-                $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
-                $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
-
-                $('#lnk_update_record').off('click').on('click', function() {
-                    let annotations: any = {};
-                    let update_values: string[] = [];
-                    annotations.values = [];
-                    
-                    // Build up annotations object
-                    $('#inspectorView input[type="checkbox"]').each(function() {
-                        update_values.push((this.checked) ? "y" : "");
-                    })
-                    annotations.values.push(update_values);
-                    updateRecord(row_index, sheetId, annotations);
-                });
-
-                showMetadata(row_data);
-                
-            } else {
-                setPagination(row_index - 2, row_index);
-                alert('No data found');
-            }
-        }, function (response: any) {
-            console.error('Error: ' + response.result.error.message);
-        });
-    });
-}
-
 function showPage(row_index: number) {
     const sheetId = localStorage.getItem('analyst_spreadsheetId');
     getRow(row_index).then(function(row_data) {
@@ -194,34 +142,6 @@ function showPage(row_index: number) {
         setPagination(row_index - 2, row_index);
         alert('No data found');
     });
-    // getRow(row_index).then(function(values) {
-    //     togglePageView();
-    //             let row_data = values[0];
-    //             let diff_with_previous_url = row_data[8];
-    //             let diff_with_first_url = row_data[9] || '';
-
-    //             // populate versionista links
-    //             $('#lnk_last_two_diff').attr('href', diff_with_previous_url || '');
-    //             $('#lnk_last_to_base_diff').attr('href', diff_with_first_url || '');
-
-    //             $('#lnk_update_record').off('click').on('click', function() {
-    //                 let annotations: any = {};
-    //                 let update_values: string[] = [];
-    //                 annotations.values = [];
-                    
-    //                 // Build up annotations object
-    //                 $('#inspectorView input[type="checkbox"]').each(function() {
-    //                     update_values.push((this.checked) ? "y" : "");
-    //                 })
-    //                 annotations.values.push(update_values);
-    //                 updateRecord(row_index, sheetId, annotations);
-    //             });
-
-    //             showMetadata(row_data);
-    // }).catch(function(error) {
-    //     setPagination(row_index - 2, row_index);
-    //     alert('No data found');
-    // });
 }
 
 function getRow(row_index: number): Promise<any> {
@@ -231,7 +151,7 @@ function getRow(row_index: number): Promise<any> {
     // Info on spreadsheets.values.get: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
     const path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}`;
 
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         gapiCallbacks.push(function() {
             gapi.client.request({
                 'path': path,
@@ -252,16 +172,6 @@ function getRow(row_index: number): Promise<any> {
                 reject(`Error: No Data found`);
             });
         });
-    });
-}
-
-function updateRecord(row_index: number, sheetId: string, values: any[]) {
-    let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
-    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
-
-    makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
-        if (err) return console.log(err);
-        alert('Signifiers updated.');
     });
 }
 
@@ -311,6 +221,17 @@ function setPagination(prev_row_index: number, next_row_index: number) {
         showPage(next_row_index);
         setPagination(next_row_index - 1, next_row_index + 1);
     })
+}
+
+function updateRecord(row_index: number, sheetId: string, values: any[]) {
+    let spreadsheetId = localStorage.getItem('analyst_spreadsheetId');
+    var url = encodeURI(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/N${row_index}:AE${row_index}?valueInputOption=USER_ENTERED`);
+
+    makeRequest('PUT', url, JSON.stringify(values), function(err: any) {
+        if (err) return console.log(err);
+        $('#lnk_update_record').text('Updated!');
+        // alert('Signifiers updated.');
+    });
 }
 
 function handleAddImportantChange(row_data: string[]) {
