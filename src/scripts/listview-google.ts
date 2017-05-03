@@ -1,7 +1,68 @@
 import {gapiCallbacks} from './google-auth';
 import {makeRequest} from './google-auth';
 
-export function getList(): Promise<any> {
+$(document).ready(function() {
+    $('#lnk_toggle_signifiers').click(toggleSignifierAbbreviations);
+    $('#lnk_view_list').click(toggleListView); 
+
+    //TODO - understand how this magic works!
+    // https://advancedweb.hu/2015/05/12/using-google-auth-in-javascript/
+    // http://mrcoles.com/blog/google-analytics-asynchronous-tracking-how-it-work/
+    gapiCallbacks.push(function () {
+        getList().then(function(response) {
+            let records = response;
+
+            let table = $('#tbl_list_view');
+            let diff = $('#diff_view');
+            table.find('thead').append(getTableHeader());
+
+            const tbody = table.find('tbody');
+            const totalRecordLength = 31;
+            const data_start_index = 7;
+
+            records.forEach(function(record: any, index: number, records: any) {
+                // gapi will not return empty columns, so we have to pad them 
+                if (record.length < totalRecordLength) {
+                    let i = totalRecordLength - record.length;
+                    while (i-- > 0) record.push("");
+                }
+                
+                let row = getTableRow(record);
+                row.data('row_index', index + data_start_index);
+                row.data('current_record', record)
+                tbody.append(row);
+            })
+            toggleProgressbar(false);
+        }); 
+    });
+});
+
+/* Basic page handlers for toggle views */ 
+function toggleProgressbar(isVisible: boolean) {
+    if (isVisible) $('.progress').show();
+    else $('.progress').hide(); 
+}
+
+function togglePageView() {
+    $('#container_list_view').hide();
+    $('#container_page_view').show();
+}
+
+function toggleListView() {
+    $('#container_list_view').show();
+    $('#container_page_view').hide();
+}
+
+function toggleSignifierAbbreviations(e: any) {
+    e.preventDefault();
+    $('.info-text').toggle();
+    $('#inspectorView').toggleClass('short-view');
+}
+
+/* END - page handlers */
+
+/* List view functions */
+function getList(): Promise<any> {
     let sheetID = localStorage.getItem('analyst_spreadsheetId');
     let range = 'A7:AE'; 
     var path = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}`;
@@ -17,7 +78,19 @@ export function getList(): Promise<any> {
     });    
 }
 
-export function getTableRow(row_data: any[]) {
+function getTableHeader() {
+    return $('<tr>').append(
+        $('<th>').text('ID'), 
+        $('<th>').text('Output Date'), 
+        $('<th>').text('Site'), 
+        $('<th>').text('Page Name'), 
+        $('<th>').text('Url'),
+        $('<th>').text('Page View Url'),
+        $('<th>').text('Last Two'),
+        $('<th>').text('Latest to Base'));
+}
+
+function getTableRow(row_data: any[]) {
     let record = new Record(row_data);
 
     let row = $('<tr>').attr('id', `row_record_${record.index}`).append(
@@ -38,8 +111,10 @@ export function getTableRow(row_data: any[]) {
     });
     return row;
 }
+/* END - list view functions */
 
-export function showPage(row_index: number) {
+/* Page view functions */
+function showPage(row_index: number) {
     const sheetId = localStorage.getItem('analyst_spreadsheetId');
     const range = `A${row_index}:AE${row_index}`
 
@@ -157,7 +232,7 @@ function showMetadata(row_data: any) {
     }  
 }
 
-export function setPagination(prev_row_index: number, next_row_index: number) {
+function setPagination(prev_row_index: number, next_row_index: number) {
     // we assume records start at row 7
     const min_row_index = 7; 
 
@@ -214,11 +289,8 @@ function handleAddDictionary(row_data: string[]) {
         alert('Dictionary exported.');
     });
 }
+/* END - page view functions */
 
-function togglePageView() {
-    $('#container_list_view').hide();
-    $('#container_page_view').show();
-}
 
 class Annotations {
     [key: string]: boolean;
