@@ -7,8 +7,8 @@
         <div class="col-md-3">
             <nav aria-label="...">
                 <ul class="pager">
-                    <li><a href="#" id="prev_index">&lt;-- Previous</a></li>
-                    <li><a href="#" id="next_index">Next --&gt;</a></li>
+                    <li><a href="#" id="prev_index"><i class="fa fa-arrow-left" aria-hidden="true"></i> Previous</a></li>
+                    <li><a href="#" id="next_index">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
                 </ul>
             </nav>
         </div>
@@ -17,13 +17,18 @@
     <hr />
 
     <div class="row">
-        <div class="col-md-9">
-            <a id="lnk_toggle_signifiers" href="#">Toggle Signifiers</a> || 
-            <a id="lnk_update_record" href="#">Update Record</a> ||
-            <a id="lnk_view_list" href="#">Back to list view</a>
+        <div class="col-md-6">
+            <i class="fa fa-toggle-on" aria-hidden="true"></i>
+            <a id="lnk_toggle_signifiers" class="lnk-action" href="#">Toggle Signifiers</a> 
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+            <a id="lnk_update_record" class="lnk-action" href="#">Update Record</a>
+            <i class="fa fa-list" aria-hidden="true"></i>
+            <a id="lnk_view_list" class="lnk-action" href="#">Back to list view</a>
         </div>
-        <div class="col-md-3" class="text_right">
-            <a id="lnk_add_important_change" href="#">Add Important Change</a> ||
+        <div class="col-md-6 text-right">
+            <i class="fa fa-upload" aria-hidden="true"></i>
+            <a id="lnk_add_important_change" class="lnk-action" href="#">Add Important Change</a>
+            <i class="fa fa-database" aria-hidden="true"></i>
             <a id="lnk_add_dictionary" href="#">Add to Dictionary</a>
         </div>
     </div>
