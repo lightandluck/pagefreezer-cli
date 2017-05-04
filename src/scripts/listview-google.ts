@@ -7,7 +7,7 @@ $(document).ready(function() {
     $('#inspectorView input[type="checkbox"]').on('click.resetlinktext', resetlinktext);
 
 
-    //TODO - understand how this magic works!
+    // TODO - understand how this magic works!
     // https://advancedweb.hu/2015/05/12/using-google-auth-in-javascript/
     // http://mrcoles.com/blog/google-analytics-asynchronous-tracking-how-it-work/
     gapiCallbacks.push(function () {

@@ -2,10 +2,38 @@ import {gapiCallbacks} from './google-auth';
 
 $(document).ready(() => {
     $('#settings').click(handleSettings); 
+
     //TODO - create init function to show settings if none exist
+    if (!localStorage.getItem('analyst_sheet_path')) {
+        handleSettings();
+    }
+
+    // TODO - Remove after done showing people tests
+    if (!localStorage.getItem('TestDefaults')) {
+        setTestDefaults();
+    }
+    
 });
 
-function handleSettings() {
+function setTestDefaults() {
+    localStorage.setItem('TestDefaults', 'true');
+    $.getJSON('./config.json', function(config: any) {
+        let analyst_sheet_path = config.ANALYST_TESTPATH;
+        let important_changes_path = config.CHANGES_TESTPATH;
+        let dictionary_path = config.DICTIONARY_TESTPATH;
+
+        $('#analyst_sheet_path').val(analyst_sheet_path);
+        $('#analyst_sheet_url').attr('href', analyst_sheet_path);
+
+        $('#important_changes_path').val(important_changes_path);
+        $('#important_changes_url').attr('href', important_changes_path);
+
+        $('#dictionary_path').val(dictionary_path);
+        $('#dictionary_url').attr('href', dictionary_path);
+    });
+}
+
+export function handleSettings() {
     return $.get('settings.html', (data) => {
         bootbox.dialog({
             title: 'Settings',
