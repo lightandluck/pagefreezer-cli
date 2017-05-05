@@ -1,4 +1,5 @@
 import {gapiCallbacks} from './google-auth';
+import {setupListView} from './listview-google';
 
 $(document).ready(() => {
     $('#settings').click(handleSettings); 
@@ -8,15 +9,13 @@ $(document).ready(() => {
         handleSettings();
     }
 
-    // TODO - Remove after done showing people tests
+    // // TODO - Remove after done showing people tests
     if (!localStorage.getItem('TestDefaults')) {
         setTestDefaults();
     }
-    
 });
 
 function setTestDefaults() {
-    localStorage.setItem('TestDefaults', 'true');
     $.getJSON('./config.json', function(config: any) {
         let analyst_sheet_path = config.ANALYST_TESTPATH;
         let important_changes_path = config.CHANGES_TESTPATH;
@@ -76,6 +75,11 @@ function savePaths() {
     localStorage.setItem('analyst_worksheetId', analyst_worksheetId);
     localStorage.setItem('important_changes_worksheetId', changes_worksheetId);
     localStorage.setItem('dictionary_worksheetId', dictionary_worksheetId);
+
+    if (!localStorage.getItem('TestDefaults')) {
+        localStorage.setItem('TestDefaults', 'true');
+        setupListView();
+    }
     
 }
 

@@ -5,37 +5,7 @@ $(document).ready(function() {
     $('#lnk_toggle_signifiers').click(toggleSignifierAbbreviations);
     $('#lnk_view_list').click(toggleListView); 
     $('#inspectorView input[type="checkbox"]').on('click.resetlinktext', resetlinktext);
-
-
-    // TODO - understand how this magic works!
-    // https://advancedweb.hu/2015/05/12/using-google-auth-in-javascript/
-    // http://mrcoles.com/blog/google-analytics-asynchronous-tracking-how-it-work/
-    gapiCallbacks.push(function () {
-        getList().then(function(response) {
-            let records = response;
-
-            let table = $('#tbl_list_view');
-            let diff = $('#diff_view');
-            table.find('thead').append(getTableHeader());
-
-            const tbody = table.find('tbody');
-            const totalRecordLength = 31;
-            const data_start_index = 7;
-
-            records.forEach(function(record: any, index: number, records: any) {
-                // gapi will not return empty columns, so we have to pad them 
-                if (record.length < totalRecordLength) {
-                    let i = totalRecordLength - record.length;
-                    while (i-- > 0) record.push("");
-                }
-                
-                let row = getTableRow(record);
-                row.data('row_index', index + data_start_index);
-                tbody.append(row);
-            })
-            toggleProgressbar(false);
-        }); 
-    });
+    setupListView();    
 });
 
 /* Basic page handlers for toggle views */ 
@@ -68,6 +38,40 @@ function resetlinktext() {
 /* END - page handlers */
 
 /* List view functions */
+export function setupListView() {
+    //TODO - understand how this magic works!
+    // https://advancedweb.hu/2015/05/12/using-google-auth-in-javascript/
+    // http://mrcoles.com/blog/google-analytics-asynchronous-tracking-how-it-work/
+    gapiCallbacks.push(function () {
+        getList().then(function(response) {
+            let records = response;
+
+            let table = $('#tbl_list_view');
+            let diff = $('#diff_view');
+            table.find('thead').append(getTableHeader());
+
+            const tbody = table.find('tbody');
+            const totalRecordLength = 31;
+            const data_start_index = 7;
+
+            records.forEach(function(record: any, index: number, records: any) {
+                // gapi will not return empty columns, so we have to pad them 
+                if (record.length < totalRecordLength) {
+                    let i = totalRecordLength - record.length;
+                    while (i-- > 0) record.push("");
+                }
+                
+                let row = getTableRow(record);
+                row.data('row_index', index + data_start_index);
+                tbody.append(row);
+            })
+            toggleProgressbar(false);
+        }).catch(function(err) {
+            alert('Put in settings and save');
+        }); 
+    });
+}
+
 function getList(): Promise<any> {
     let sheetID = localStorage.getItem('analyst_spreadsheetId');
     let range = 'A7:AE'; 
