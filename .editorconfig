@@ -1,3 +1,5 @@
+# SETTINGS: They control the spellweaving environment
+
 [*]
 indent_size = 2
 indent_style = space
