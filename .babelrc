@@ -1,3 +1,15 @@
 {
-  "presets": ["es2015", "es2016", "react"]
+    "presets": ["es2015", "es2016", "react"]
 }
+
+// Notes presets, oh what do they do? Why not put this into npm script. Who cares
+// it's done. Another config file more what the hey.
+
+/*
+I can leave notes in here hehe. Not like that mean `package.json`. He doesn't
+want anyone there. All business and no fun. He should be doing all the work
+so I can be gone! - The One Liner Fig
+*/
+
+// gulp needs this to run. Browserify -> babelify -> needs config
+
