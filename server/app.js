@@ -1,15 +1,33 @@
 'use strict';
+/*
+This is where we begin. Here we create our faithful golem, SERVER (app).
+SERVER is the conduit between Glamour (-UI) and Reality (-DB).
+Embued with our magicks he shows -UI to mortals and transfers their knowledge to -DB.
+We are making it easy for people to speak to -DB. SERVER hides the few paths that mortals can take.
+*/
 
+/*
+Incantation - require: call upon the Gods and constructs to grant us power
+*/
+
+// External libraries, beyond our control. We whisper 'require' and they fulfill wishes.
+// Untold power lies deep in their own tomes. Beware
 const express = require('express');
 const bodyParser = require('body-parser');
 const makeRequest = require('request');
-const app = express();
 const path = require('path');
+
+// Call upon the God, Express(). Grant life to SERVER, this construct of imagination. Awaken!
+const app = express();
+
+// Lesser beings of our creation. Imps that help SERVER fulfill his work. -UI never speaks to these.
 const sheetData = require('./sheet-data');
 const config = require('./configuration');
 
+// Special components that SERVER uses
 const serverPort = process.env.PORT || 3001;
 
+// Secure all messages
 if (process.env.FORCE_SSL && process.env.FORCE_SSL.toLowerCase() === 'true') {
   app.use((request, response, next) => {
     if (request.secure || request.headers['x-forwarded-proto'] === 'https') {
