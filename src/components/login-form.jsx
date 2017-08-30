@@ -105,6 +105,7 @@ export default class LoginPanel extends React.Component {
   }
 }
 
+// Receiving context from web-monitoring-ui.jsx
 LoginPanel.contextTypes = {
   api: PropTypes.instanceOf(WebMonitoringDb)
 };

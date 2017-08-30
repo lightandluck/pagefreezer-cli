@@ -189,12 +189,15 @@ export default class WebMonitoringUi extends React.Component {
       </AriaModal>
     );
   }
-
+  // Context 1/2 - Context is information made available to any child element. The first part is
+  //  defining a function that returns that information in an object. We're using object initializer
+  //  syntax here. With context we can command all our minions with a single spell.
   getChildContext () {
     return {api, localApi};
   }
 }
 
+// Context 2/2 -define the types, shape and form our context
 WebMonitoringUi.childContextTypes = {
   api: PropTypes.instanceOf(WebMonitoringDb),
   localApi: PropTypes.instanceOf(WebMonitoringApi)
