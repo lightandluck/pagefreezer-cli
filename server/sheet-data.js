@@ -291,6 +291,7 @@ function addAuthentication (requestData) {
  * Convert a callback-based async function into a promise-based function.
  * @param {Function} functionWithCallback
  * @returns {Function} Function that returns a promise
+ * Eerie magic that allows us to transform a callback into a promise.
  */
 function promisable (functionWithCallback) {
   return (...input) => {
