@@ -1,3 +1,4 @@
+import {dateFormatter} from '../scripts/formatters';
 import React from 'react';
 import Loading from './loading';
 
@@ -5,6 +6,7 @@ import Loading from './loading';
  * These props also inherit from React Router's RouteComponent props
  * @typedef {Object} PageListProps
  * @property {Page[]} pages
+ * @property {(any) => void} onSearch
  */
 
 /**
@@ -15,6 +17,12 @@ import Loading from './loading';
  * @param {PageListProps} props
  */
 export default class PageList extends React.Component {
+  constructor (props) {
+    super(props);
+    this._didSearch = this._didSearch.bind(this);
+    this._dispatchSearch = debounce(this._dispatchSearch.bind(this), 500);
+  }
+
   render () {
     if (!this.props.pages) {
       return <Loading />;
@@ -22,9 +30,16 @@ export default class PageList extends React.Component {
 
     return (
       <div className="container-fluid container-list-view">
+        <div className="row search-bar">
+          <input
+            type="text"
+            placeholder="Search for a URL..."
+            onChange={this._didSearch}
+          />
+        </div>
         <div className="row">
           <div className="col-md-12">
-            <table className="table">
+            <table className="page-list table">
               <thead>
                 {this.renderHeader()}
               </thead>
@@ -41,54 +56,26 @@ export default class PageList extends React.Component {
   renderHeader () {
     return (
       <tr>
-        <th>ID</th>
-        <th>Output Date</th>
-        <th>Site</th>
-        <th>Page Name</th>
-        <th>URL</th>
-        <th>Page View URL</th>
-        <th>Last Two</th>
-        <th>Latest to Base</th>
+        <th data-name="capture-date">Capture Date</th>
+        <th data-name="site">Site</th>
+        <th data-name="page-name">Page Name</th>
+        <th data-name="url">URL</th>
       </tr>
     );
   }
 
   renderRow (record) {
-    const version = record.latest;
-    let versionistaData;
-    if (version.source_type === 'versionista') {
-      versionistaData = version.source_metadata;
-    }
-
-    const diffWithPrevious = versionistaData && this.renderDiffLink(versionistaData.diff_with_previous_url);
-    const diffWithFirst = versionistaData && this.renderDiffLink(versionistaData.diff_with_first_url);
-
     const onClick = this.didClickRow.bind(this, record);
-
-    const shortUrl = `${record.url.substr(0, 20)}…`;
-    const rawContentPath = versionistaData && versionistaData.url.replace(/^\w+:\/\/[^/]+\//, '');
 
     // TODO: click handling
     return (
       <tr key={record.uuid} onClick={onClick}>
-        <td>{record.uuid}</td>
-        <td>{record.latest.capture_time.toISOString()}</td>
+        <td>{dateFormatter.format(record.latest.capture_time)}</td>
         <td>{record.site}</td>
         <td>{record.title}</td>
-        <td><a href={record.url} target="_blank" rel="noopener">{shortUrl}</a></td>
-        <td><a href={versionistaData && versionistaData.url} target="_blank" rel="noopener">{rawContentPath}</a></td>
-        <td>{diffWithPrevious}</td>
-        <td>{diffWithFirst}</td>
+        <td><a href={record.url} target="_blank" rel="noopener">{record.url}</a></td>
       </tr>
     );
-  }
-
-  renderDiffLink (url) {
-    if (url) {
-      return <a href={url} target="_blank">{url.substr(-15)}</a>;
-    }
-
-    return <em>[Initial Version]</em>;
   }
 
   didClickRow (page, event) {
@@ -97,6 +84,28 @@ export default class PageList extends React.Component {
     }
 
     this.props.history.push(`/page/${page.uuid}`);
+  }
+
+  _didSearch (event) {
+    this._dispatchSearch(event.target.value);
+  }
+
+  _dispatchSearch (url) {
+    if (url) {
+      // If doesn't start with a protocol (or looks like it's going that way),
+      // prefix with an asterisk.
+      if (!/^(\*|\/\/|(h|ht|htt|https?|https?\/|https?\/\/))/.test(url)) {
+        url = url = `*//${url}`;
+      }
+      // If the search is for a domain + TLD, return all paths under it
+      if (/^[\w:*]+(\/\/)?[^/]+$/.test(url)) {
+        url = `${url}*`;
+      }
+    }
+    if (this.props.onSearch) {
+      const query = url ? {url} : null;
+      this.props.onSearch(query);
+    }
   }
 }
 
@@ -108,4 +117,12 @@ function isInAnchor (node) {
     return true;
   }
   return isInAnchor(node.parentNode);
+}
+
+function debounce (func, delay) {
+  let timer = null;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
 }

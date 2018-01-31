@@ -47,13 +47,11 @@ const storageLocation = 'WebMonitoringDb.token';
  */
 
 /**
- * @typedef {Object} ChangeDiff
- * @property {string} page_id
- * @property {string} from_version_id
- * @property {string} to_version_id
- * @property {string} diff_service
- * @property {string} diff_service_version
- * @property {*} content
+ * @typedef {Object} DiffData
+ * @property {number} change_count
+ * @property {string} diff
+ * @property {string} version
+ * @property {string} type
  */
 
 /**
@@ -226,10 +224,11 @@ export default class WebMonitoringDb {
      * @param {string} aId
      * @param {string} bId
      * @param {string} diffType
-     * @returns {Promise<ChangeDiff>}
+     * @returns {Promise<DiffData>}
      */
-  getDiff (pageId, aId, bId, diffType) {
-    return this._request(this._createUrl(`pages/${pageId}/changes/${aId}..${bId}/diff/${diffType}`, {format: 'json'}))
+  getDiff (pageId, aId, bId, diffType, options) {
+    const query = Object.assign({format: 'json'}, options);
+    return this._request(this._createUrl(`pages/${pageId}/changes/${aId}..${bId}/diff/${diffType}`, query))
       .then(response => response.json())
       .then(throwIfError('Could not load diff'))
       .then(data => parseDiff(data.data));
@@ -404,12 +403,11 @@ function parseChange (data) {
 
 function parseDiff (data) {
   // temporarily massage old diff format into new diff format
-  if (data.content && data.content.data) {
-    let objectFormat = data.content.data;
-    let arrayFormat = objectFormat.map(value => {
-      return [value.Type, value.Text];
-    });
-    data.content = {diff: arrayFormat};
+  if (data.content && data.content.diff) {
+    return {
+      'diff': data.content.diff,
+      'change_count': null
+    };
   }
   return data;
 }

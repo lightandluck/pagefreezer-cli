@@ -37,6 +37,7 @@ export default class WebMonitoringUi extends React.Component {
       isLoading: true,
       pageFilter: '', // keeps track of which set of pages we are looking at
       pages: null,
+      search: null,
       showLogin: false,
       user: null,
     };
@@ -46,6 +47,7 @@ export default class WebMonitoringUi extends React.Component {
     this.logOut = this.logOut.bind(this);
     this.loadPages = this.loadPages.bind(this);
     this.setPageFilter = this.setPageFilter.bind(this);
+    this.search = this.search.bind(this);
   }
 
   setPageFilter (filter) {
@@ -71,6 +73,11 @@ export default class WebMonitoringUi extends React.Component {
     this.loadPages('pages');
   }
 
+  search (query) {
+    this.setState({search: query});
+    this.loadPages(this.state.pageFilter);
+  }
+
   /**
    * Load pages depending on whether we want all pages or assigned pages.
    * @private
@@ -87,7 +94,7 @@ export default class WebMonitoringUi extends React.Component {
           return Promise.reject(new Error('You must be logged in to view pages'));
         }
 
-        const query = {include_latest: true};
+        const query = Object.assign({include_latest: true}, this.state.search);
         if (pageFilter === 'assignedPages') {
           return localApi.getPagesForUser(api.userData.email, null, query);
         }
@@ -119,6 +126,10 @@ export default class WebMonitoringUi extends React.Component {
       return <Loading />;
     }
 
+    /** TODO: When we move to a public platform, we might not
+     * need this check anymore because users should have
+     * some level of access without logging in.
+     */
     if (!this.state.user) {
       return this.renderLoginDialog();
     }
@@ -133,45 +144,44 @@ export default class WebMonitoringUi extends React.Component {
           {...routeProps}
           pages={pages}
           user={this.state.user}
+          onSearch={this.search}
         />;
       };
     };
     const modal = this.state.showLogin ? this.renderLoginDialog() : null;
 
     return (
-      <div>
-        <Router>
-          <div id="application">
-            <NavBar
-              title="EDGI"
+      <Router>
+        <div id="application">
+          <NavBar
+            title="EDGI"
+            user={this.state.user}
+            showLogin={this.showLogin}
+            logOut={this.logOut}
+            pageFilter={this.state.pageFilter}
+            setPageFilter={this.setPageFilter}
+          />
+          <Route exact path="/" render={() => {
+            if (this.state.user) {
+              return <Redirect to="/assignedPages" />;
+            } else {
+              return <Redirect to="/pages" />;
+            }
+          }}/>
+          <Route path="/pages" render={withData(PageList, 'pages')} />
+          <Route path="/assignedPages" render={withData(PageList, 'assignedPages')} />
+          <Route path="/page/:pageId/:change?" render={(routeProps) =>
+            <PageDetails
+              {...routeProps}
               user={this.state.user}
-              showLogin={this.showLogin}
-              logOut={this.logOut}
               pageFilter={this.state.pageFilter}
-              setPageFilter={this.setPageFilter}
+              pages={this.state[this.state.pageFilter]}
             />
-            <Route exact path="/" render={() => {
-              if (this.state.user) {
-                return <Redirect to="/assignedPages" />;
-              } else {
-                return <Redirect to="/pages" />;
-              }
-            }}/>
-            <Route path="/pages" render={withData(PageList, 'pages')} />
-            <Route path="/assignedPages" render={withData(PageList, 'assignedPages')} />
-            <Route path="/page/:pageId/:change?" render={(routeProps) =>
-              <PageDetails
-                {...routeProps}
-                user={this.state.user}
-                pageFilter={this.state.pageFilter}
-                pages={this.state[this.state.pageFilter]}
-              />
-            }/>
-            <Route path="/version/:versionId" component={VersionRedirect} />
-          </div>
-        </Router>
-        {modal}
-      </div>
+          }/>
+          <Route path="/version/:versionId" component={VersionRedirect} />
+          {modal}
+        </div>
+      </Router>
     );
   }
 

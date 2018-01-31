@@ -5,14 +5,26 @@ ins {
     background-color: lightgreen !important;
 }
 
-.side-by-side-render {
-    display: flex;
+.diff-view {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }
 
-.side-by-side-render > iframe {
+.diff-view__alert {
+  text-align: center;
+}
+
+.side-by-side-render,
+.inline-render {
+    display: flex;
+    flex: 1 0 auto;
+}
+
+.side-by-side-render > iframe,
+.inline-render > iframe {
     border: 1px solid #ccc;
     border-radius: 2px;
-    min-height: 40em;
     width: 100%;
 }
 

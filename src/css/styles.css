@@ -1,9 +1,35 @@
 @import './diff.css';
 
 /* ===== Global ===== */
+html, #web-monitoring-ui-root {
+  height: 100%
+}
+
+#web-monitoring-ui-root {
+  display: flex;
+  flex-direction: column;
+}
+
+#application {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+.container-page-view > .row, .versionista-info, .version-selector {
+  flex: 0 0 auto;
+}
+
+.change-view {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 body {
     background: #136a8a;
     background: linear-gradient(45deg, #136a8a, #267871);
+    height: 100%;
 }
 
 .fa {
@@ -14,11 +40,14 @@ body {
 .container-list-view, .container-page-view {
     background: white;
     color: #444;
-    margin: 5px 0 ;
+    margin: 5px 0;
 }
 
 .container-page-view {
-    padding: 15px;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  padding: 15px;
 }
 
 /* ===== Nav Bar ===== */
@@ -63,7 +92,14 @@ body {
 
 .navbar {
     border-radius: 0;
+    box-shadow: 0px 2px 5px rgba(100, 100, 100, 0.7);
+    flex: 0 0 auto;
     margin-bottom: 0;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1;
 }
 
 .navbar-text {
@@ -85,12 +121,49 @@ body {
 }
 
 /* ===== List View ===== */
-.container-list-view tbody tr {
-    cursor: pointer;
+.page-list {
+  table-layout: fixed;
 }
 
-.container-list-view tbody tr:hover {
-    background-color: #EEE;
+.page-list tbody tr {
+  cursor: pointer;
+}
+
+.page-list tbody tr:hover {
+  background-color: #EEE;
+}
+
+.page-list td {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.page-list th[data-name="capture-date"] {
+  width: 12%;
+}
+
+.page-list th[data-name="site"]  {
+  width: 15%;
+}
+
+.page-list th[data-name="page-name"] {
+  width: 33%;
+}
+
+.page-list th[data-name="url"] {
+  width: 40%;
+}
+
+.search-bar {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 0.5em;
+}
+
+.search-bar input {
+  width: 100%;
+  border: none;
+  font-size: 1.25em;
+  padding: 0.5em 15px;
 }
 
 /* ===== Page Detail View ===== */
@@ -361,9 +434,10 @@ iframe {
 }
 
 .loading {
+  align-items: center;
+  background: transparent;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .versionista-info {
