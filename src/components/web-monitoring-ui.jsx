@@ -1,16 +1,17 @@
-import PropTypes from 'prop-types';
-import React from 'react';
 import AriaModal from 'react-aria-modal';
+import 'babel-polyfill';
 import {BrowserRouter as Router, Redirect, Route} from 'react-router-dom';
-import WebMonitoringApi from '../services/web-monitoring-api';
-import WebMonitoringDb from '../services/web-monitoring-db';
 import EnvironmentBanner from './environment-banner';
 import Loading from './loading';
 import LoginForm from './login-form';
 import NavBar from './nav-bar';
 import PageDetails from './page-details';
 import PageList from './page-list';
+import PropTypes from 'prop-types';
+import React from 'react';
 import VersionRedirect from './version-redirect';
+import WebMonitoringApi from '../services/web-monitoring-api';
+import WebMonitoringDb from '../services/web-monitoring-db';
 
 const configuration = window.webMonitoringConfig;
 

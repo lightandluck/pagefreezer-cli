@@ -10,5 +10,9 @@
       }
     }],
     "react"
+  ],
+  "plugins": [
+    "transform-regenerator", 
+    "transform-async-generator-functions"
   ]
 }

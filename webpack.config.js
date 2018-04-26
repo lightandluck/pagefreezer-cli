@@ -20,6 +20,7 @@ module.exports = {
   context,
   devtool: isProduction ? 'source-map' : 'inline-source-map',
   entry: {
+    'babel-polyfill': 'babel-polyfill',
     'bundle': './src/scripts/main.jsx',
   },
   output: {
